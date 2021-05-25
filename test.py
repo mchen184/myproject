@@ -28,3 +28,18 @@ input()
 response = requests.put(BASE + "users/add", {"first_name": "Adam","last_name": "John","userid": "add","groups": "owner"})
 print(response.json())
 
+input()
+response1 = requests.get(BASE + "groups/users")
+print(response1.json())
+
+input()
+response1 = requests.post(BASE + "groups/test")
+print(response1.json())
+
+input()
+response1 = requests. put(BASE + "groups/users", {"userid":"answd","userid":"happy"})
+print(response1.json())
+
+input()
+response1 = requests.delete(BASE + "groups/test")
+print(response1)

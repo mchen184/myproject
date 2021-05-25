@@ -84,19 +84,47 @@ class Record(Resource):
 	
 
 class getGroups(Resource):
-	def getgroup(self,gid):
+	@marshal_with(resource_fields)
+	def get(self,gid):
+		args = user_post_args.parse_args()
+		result = UserUpdate.query.filter_by(groups=gid).all()
+		users = []
+		if not result:
+			abort(404,message = "No group found")
+		for i in range(len(result)):
+			users.append(result[i][userid])
+		return users
+
+	@marshal_with(resource_fields)
+	def post(self,gid):
 		args = user_post_args.parse_args()
 		result = UserUpdate.query.filter_by(groups=gid).first()
-		for user in users:
-			if not result:
-				abort (404, message="No group found")
-		return 
-		
-	def __repr__(self):
-		return f"Record(first_name = {first_name}, last_name = {last_name}, userid = {userid}, groups = {groups})"
+		if result:
+			abort(409, message="Group already exists")
+		args['group'] = gid
+		db.session.add(args['group'])
+		db.session.commit()
+		return gid,201
+
+	@marshal_with(resource_fields)
+	def put(self,gid,list):
+		args = user_put_args.parse_args()
+		result = UserUpdate.query.filter_by(groups=gid).all()
+		if not result:
+			abort (404, message =" No valid group found")
+		# modify group members
+		groups_members = list
+		db.session.commit()
+		return groups_members
+
+	@marshal_with(resource_fields)
+	def delete(self,gid):
+		del groups[gid]
+		return '',204
+
 
 api.add_resource(Record, "/users/<string:uid>")
-api.add_resource(getGroups, "/groups<string:group>")
+api.add_resource(getGroups, "/groups/<string:gid>")
 #api.add_resource(Record,"/groups/<string:gid>")
 if __name__ == "__main__":
 	app.run(debug=True)
